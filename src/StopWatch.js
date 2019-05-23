@@ -5,8 +5,11 @@ class StopWatch extends Component {
     super(props);
     this.state ={
       currentMinute: 5,
-      currentSecond: 0
-    }
+      currentSecond: 0,
+      runCommand: 'pause'
+    };
+    this.runInterval = this.runInterval.bind(this);
+    this.handleRunning = this.handleRunning.bind(this);
   }
 
   updateTimer() {
@@ -24,10 +27,26 @@ class StopWatch extends Component {
     };
   }
 
+  runInterval(flag) {
+    if (flag)
+      this.interval = setInterval(() => { this.updateTimer(); }, 1000);
+    else
+      clearInterval(this.interval);
+  }
+
+  handleRunning() {
+    if (this.state.runCommand === 'pause') {
+      this.runInterval(false);
+      this.setState( {runCommand: 'play'} );
+    }
+    else {
+      this.runInterval(true);
+      this.setState( {runCommand: 'pause'} );
+    }
+  }
+
   componentDidMount() {
-    setInterval(() => {
-      this.updateTimer();
-    }, 1000);
+    this.runInterval(true);
   }
 
   render(){
@@ -39,6 +58,7 @@ class StopWatch extends Component {
           :
           {this.state.currentSecond.toString().padStart(2, '0')}
         </p>
+        <p><button onClick={this.handleRunning}>{this.state.runCommand}</button></p>
       </div>
     );
   }
